@@ -1,14 +1,22 @@
 const express = require("express")
+const fs = require("fs")
 
 const app = express();
 
-app.get('/',(req,res)=>{
-    res.send("Hello from homepage")
-})
+const log = `${Date.now()}  ${req.url}  ${req.ip} \n`
 
-app.get('/about',(req,res)=>{  
-    res.send("hello from about page" + "name" + req.query.name);
-})
+const logAReq= fs.appendFile("./log.txt",log.toString(),(err,data)=>{})
+
+
+    app.get('/',(req,res)=>{
+        res.send("Hello from homepage")
+        logAReq(req);
+    })
+    app.get('/about',(req,res)=>{  
+        res.send("hello from about page" + "name" + req.query.name);
+        logAReq(req);
+    })
+
 
 
 
