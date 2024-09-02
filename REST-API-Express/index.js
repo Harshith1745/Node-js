@@ -16,21 +16,38 @@ app.use((req,res,next)=>{
 
 //get users objects
 app.get("/api/users", (req, res) => {
-    return res.json(users);
+    res.setHeader("X-MyEnv","Development");
+    return res.status(200).json(users);
 })
 //get user object
 app.get("/api/users/:id", (req, res) => {
     const id = Number(req.params.id);
     const user = users.find((user) => user.id === id);
-    return res.send(user);
+
+
+    if (!user) {
+        return res.status(404).send("Failed doesnot exist!");
+    }
+
+    
+    return res.status(200).json(user);
+
+
+   
 })
 //post user object
 app.post("/api/users", (req, res) => {
     const body = req.body;
     console.log(body);
     users.push({ id: users.length + 1, ...body });
+
+    if(!body || !body.first_name || !body.last_name || !body.email || !body.gender || !body.job_title){
+
+            res.status(400).json("All fields are required!");
+    }
+    
     fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), (err, data) => {
-        res.send(`Successful POST request ${users.length}`)
+        res.status(201).json(`Successful POST request ${users.length}`)
 
     })
 
@@ -40,13 +57,18 @@ app.patch("/api/users/:id", (req, res) => {
     const id = Number(req.params.id);
     const body = req.body;
     // console.log(body);
-
+   
     const user = users.find((user) => user.id === id);
     const index = users.indexOf(user);
     const updatedUser = Object.assign(user, body);
     users[index] = user;
+
+    if (!user) {
+        return res.status(404).send("Failed doesnot exist!");
+    }
+
     fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), (err) => {
-        res.send(`PATCH successful JSON : ${user}`);
+        res.status(200).json(`PATCH successful JSON : ${user}`);
     })
 
 })
@@ -60,13 +82,13 @@ app.delete("/api/users/:id", (req, res) => {
     users.splice(index, 1);
 
     if (!user) {
-        return res.send("Failed doesnot exist!");
+        return res.status(404).send("Failed doesnot exist!");
     }
 
 
 
     fs.writeFile("./MOCK_DATA.json", JSON.stringify(users),(err) => {
-        res.send(`DELETE successful JSON object`);
+        res.status(200).json(`DELETE successful JSON object`);
     })
 
 })
