@@ -1,0 +1,48 @@
+
+
+API get : /api/users 
+get complete json data of users from server
+
+API get : /api/users/1 
+          /api/users/2
+          (/api/users/:id)
+get a json data of user with :id(1,2,3....)  from server
+   
+   
+   const id =Number(req.params.id);
+   const user = users.find((user)=>user.id === id);
+    return res.send(user);
+
+
+
+API post : /api/users 
+add/append the data to json data to server.
+{
+use a middleware to get data{ form-urlencoded data,raw data } in the body   ::    app.use(express.urlencoded({extended: false}))
+   
+    const body = req.body;
+    console.log(body);
+    users.push({id: users.length +1 ,...body  });
+    fs.writeFile( "./MOCK_DATA.json", JSON.stringify(users),(err,data)=>{
+        res.send(`Successful POST request ${users.length}`)
+    }
+}
+
+
+API patch : /api/users/1001
+
+
+app.patch("/api/users/:id",(req,res)=>{
+    const id = Number(req.params.id);
+    const body = req.body;
+    // console.log(body);
+ 
+    const user = users.find((user)=>user.id === id);
+    const index = users.indexOf(user);
+    const updatedUser = Object.assign(user,body);
+    users[index]=user;
+    fs.writeFile("./MOCK_DATA.json",JSON.stringify(users),(err)=>{
+        res.send(`PATCH successful JSON : ${user}`);
+    })
+
+})
