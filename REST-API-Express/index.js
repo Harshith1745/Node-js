@@ -6,7 +6,13 @@ const PORT = 3000;
 const users = require("./MOCK_DATA.json");
 
 //middleware to use urlencoded data as body
-app.use(express.urlencoded({ extended: false }))
+app.use(express.urlencoded({ extended: false }));
+
+app.use((req,res,next)=>{
+    fs.appendFile("log.txt",`${Date.now()}: ${req.method}: ${req.path}:    ${req.ip}`,(err)=>{
+        next();
+    })
+})
 
 //get users objects
 app.get("/api/users", (req, res) => {
